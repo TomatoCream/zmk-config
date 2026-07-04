@@ -1,0 +1,17 @@
+#ifdef MOUSE_PS2_DT_PRESENT
+#include <behaviors/mouse_keys.dtsi>
+#include <behaviors/mouse_setting.dtsi>
+#include <dt-bindings/zmk/mouse.h>
+
+#define MOUSE_KEYS 3
+#define MOUSE_TP 4
+#define MOUSE_SETTINGS 5
+
+// Configure input listener layer toggle
+&mouse_ps2_input_listener {
+    layer-toggle = <MOUSE_TP>;
+    layer-toggle-delay-ms = <250>;
+    layer-toggle-timeout-ms = <250>;
+};
+
+#endif // MOUSE_PS2_DT_PRESENT

@@ -2,33 +2,15 @@ manifest:
   remotes:
     - name: zmkfirmware
       url-base: https://github.com/zmkfirmware
+    - name: infused-kim
+      url-base: https://github.com/infused-kim
   projects:
     - name: zmk
-      remote: zmkfirmware
-      revision: acfd8e5ea76cf23ad1c9b6b99848f97a95224257  # v0.3-branch
+      remote: infused-kim
+      revision: pr-testing/mouse_ps2_module_base
       import: app/west.yml
-    - name: zephyr
-      remote: zmkfirmware
-      revision: dacab4875df72109b96cc8977547a0dc04875bcd  # v3.5.0+zmk-fixes
-      import:
-        name-blocklist:
-          - ci-tools
-          - hal_altera
-          - hal_cypress
-          - hal_infineon
-          - hal_microchip
-          - hal_nxp
-          - hal_openisa
-          - hal_silabs
-          - hal_xtensa
-          - hal_st
-          - hal_ti
-          - loramac-node
-          - mcuboot
-          - mcumgr
-          - net-tools
-          - openthread
-          - edtt
-          - trusted-firmware-m
+    - name: kb_zmk_ps2_mouse_trackpoint_driver
+      remote: infused-kim
+      revision: main
   self:
     path: config

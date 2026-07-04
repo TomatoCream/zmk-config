@@ -1,8 +1,15 @@
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
-#include <dt-bindings/zmk/mouse.h>
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/ext_power.h>
+
+#ifdef MOUSE_PS2_DT_PRESENT
+#include "include/mouse_tp.dtsi"
+#else
+#define MOUSE_KEYS 3
+#define MOUSE_TP 4
+#define MOUSE_SETTINGS 5
+#endif
 
 &lt {
     tapping-term-ms = <120>;
@@ -11,7 +18,8 @@
 / {
         keymap {
                 compatible = "zmk,keymap";
-                
+
+                // Layer 0: QWERTY
                 qwerty {
                         bindings = <
    &kp GRAVE &kp N1   &kp N2    &kp N3    &kp N4    &kp N5        &kp N6   &kp N7    &kp N8  &kp N9    &kp N0   &kp BSPC
@@ -24,6 +32,8 @@
                         &kp LEFT  &kp DOWN  &kp K_MUTE   &kp UP &kp RIGHT
                         >;
                 };
+
+                // Layer 1: Lower (numbers + navigation)
                 lower_layer {
                         bindings = <
    &kp GRAVE &kp N1   &kp N2    &kp N3    &kp N4    &kp N5        &kp N6   &kp N7    &kp N8  &kp N9    &kp N0   &kp BSPC
@@ -36,6 +46,8 @@
                         &kp C_PREV &kp C_VOL_DN  &kp C_PP &kp C_VOL_UP &kp C_NEXT
                         >;
                 };
+
+                // Layer 2: Upper (symbols)
                 upper_layer {
                         bindings = <
    &kp GRAVE &kp EXCL &kp AT &kp HASH &kp DLLR  &kp PRCNT        &kp CARET &kp AMPS  &kp ASTRK &kp LPAR &kp RPAR &kp DEL
@@ -48,18 +60,22 @@
                                     &none &kp C_BRI_DN  &none &kp C_BRI_UP &none
                         >;
                 };
+
+                // Layer 3: Function keys
                 func_layer {
                         bindings = <
-   &kp ESC   &kp F1   &kp F2  &kp F3 &kp F4 &kp F5      &kp F6   &kp F7   &kp F6   &kp F9   &kp F10  &kp DEL
-   &kp TAB   &kp F11  &kp F12 &none  &none  &none       &mkp MB4 &mkp MB1 &mkp MB3 &mkp MB2 &mkp MB5 &none
+   &kp ESC   &kp F1   &kp F2  &kp F3 &kp F4 &kp F5      &kp F6   &kp F7   &kp F8   &kp F9   &kp F10  &kp DEL
+   &kp TAB   &kp F11  &kp F12 &none  &none  &none       &none    &none    &none    &none    &none    &none
    &kp LSHFT &none    &none   &none  &none  &none       &none    &none    &none    &none    &none    &none
    &kp LSHFT &none    &none   &none  &none  &none       &none    &none    &none    &none    &none    &none
    &kp LCTRL &kp LGUI                &none  &none       &none    &none                      &kp LALT &kp RGUI
                                     // DPAD Left, Down, Middle, Up, Right
-                                    // DPAD Left, Down, Middle, Up, Right
+                                      &none &none &none &none &none
                                       &none &none &none &none &none
                         >;
                 };
+
+                // Layer 4: Config (BT, power)
                 config_layer {
                         bindings = <
    &none        &to 0       &to 1 &none &none &none           &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &none &none
@@ -68,9 +84,98 @@
    &none        &none       &none &none &none &none           &none        &none        &none        &none        &none &none
    &ext_power EP_OFF &ext_power EP_ON   &none &none           &none        &none                  &bt BT_CLR   &bt BT_CLR_ALL
                                     // DPAD Left, Down, Middle, Up, Right
-                                    // DPAD Left, Down, Middle, Up, Right
+                                      &none &none &none &none &none
                                       &none &none &none &none &none
                         >;
                 };
+
+#ifdef MOUSE_PS2_DT_PRESENT
+
+                // Layer 5: Mouse keys (software mouse movement)
+                mouse_keys_layer {
+                        bindings = <
+   &none  &none  &none  &none  &none  &none       &none    &none    &none    &none    &none    &none
+   &none  &none  &mmv MOVE_UP  &none  &none  &none       &mkp MB4 &mkp MB1 &mkp MB3 &mkp MB2 &mkp MB5 &none
+   &none  &mmv MOVE_LEFT  &mmv MOVE_DOWN  &mmv MOVE_RIGHT  &none  &none       &msc SCRL_LEFT &msc SCRL_DOWN &msc SCRL_UP &msc SCRL_RIGHT &none &none
+   &none  &none  &none  &none  &none  &none       &none    &none    &none    &none    &none    &none
+   &none  &none                &none  &trans       &trans   &none                      &none &none
+                                    // DPAD Left, Down, Middle, Up, Right
+                                      &none &none &none &none &none
+                                      &none &none &none &none &none
+                        >;
+                };
+
+                // Layer 6: Mouse TrackPoint (auto-activated on TP movement)
+                mouse_tp_layer {
+                        bindings = <
+   &none  &none  &none  &none  &none  &none       &none    &none    &none    &none    &none    &none
+   &none  &none  &none  &none  &none  &none       &mkp MB4 &mkp MB1 &mkp MB3 &mkp MB2 &mkp MB5 &none
+   &none  &none  &none  &none  &none  &none       &msc SCRL_LEFT &msc SCRL_DOWN &msc SCRL_UP &msc SCRL_RIGHT &none &none
+   &none  &none  &none  &none  &none  &none       &none    &none    &none    &none    &none    &none
+   &none  &none                &none  &none        &mo 7    &none                      &none &none
+                                    // DPAD Left, Down, Middle, Up, Right
+                                      &none &none &none &none &none
+                                      &none &none &none &none &none
+                        >;
+                };
+
+                // Layer 7: Mouse settings (runtime TP tuning)
+                // &mms params: 1=sens+, 2=sens-, 3=val6+, 4=val6-, 5=neg_inertia+, 6=neg_inertia-, 7=pts+, 8=pts-, 9=reset, 10=log
+                mouse_settings_layer {
+                        bindings = <
+   &none  &none  &none  &none  &none  &none       &none  &none  &none  &none  &none   &none
+   &none  &none  &none  &none  &none  &none       &mms 2 &mms 1 &mms 6 &mms 5 &mms 9  &none
+   &none  &none  &none  &none  &none  &none       &mms 4 &mms 3 &mms 8 &mms 7 &mms 10 &none
+   &none  &none  &none  &none  &none  &none       &none  &none  &none  &none  &none   &none
+   &none  &none                &none  &none        &trans &none                      &none  &none
+                                    // DPAD Left, Down, Middle, Up, Right
+                                      &none &none &none &none &none
+                                      &none &none &none &none &none
+                        >;
+                };
+
+#else
+
+                // Dummy layers to keep layer count consistent on left side
+                mouse_keys_layer {
+                        bindings = <
+   &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+   &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+   &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+   &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+   &trans &trans              &trans &trans    &trans &trans                   &trans &trans
+                                    // DPAD
+                        &trans &trans &trans &trans &trans
+                        &trans &trans &trans &trans &trans
+                        >;
+                };
+
+                mouse_tp_layer {
+                        bindings = <
+   &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+   &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+   &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+   &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+   &trans &trans              &trans &trans    &trans &trans                   &trans &trans
+                                    // DPAD
+                        &trans &trans &trans &trans &trans
+                        &trans &trans &trans &trans &trans
+                        >;
+                };
+
+                mouse_settings_layer {
+                        bindings = <
+   &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+   &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+   &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+   &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+   &trans &trans              &trans &trans    &trans &trans                   &trans &trans
+                                    // DPAD
+                        &trans &trans &trans &trans &trans
+                        &trans &trans &trans &trans &trans
+                        >;
+                };
+
+#endif // MOUSE_PS2_DT_PRESENT
         };
 };
