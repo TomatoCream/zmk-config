@@ -1,0 +1,25 @@
+# Copyright (c) 2026 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+description: |
+  UART-based PS/2 transport for a TrackPoint.
+
+  Place this node as a child of the UART controller whose RX pin is wired
+  to the PS/2 data line. Reads are done through the UART peripheral; writes
+  bit-bang the same pins through GPIO after switching the UART pinctrl to
+  its sleep state.
+
+compatible: "zmk,trackpoint-ps2-uart"
+
+include: base.yaml
+
+properties:
+  scl-gpios:
+    type: phandle-array
+    required: true
+    description: GPIO connected to the PS/2 clock line.
+
+  sda-gpios:
+    type: phandle-array
+    required: true
+    description: GPIO connected to the PS/2 data line (same pin as UART RX).

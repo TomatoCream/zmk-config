@@ -1,0 +1,66 @@
+# Copyright (c) 2026 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+DT_COMPAT_ZMK_TRACKPOINT_PS2 := zmk,trackpoint-ps2
+DT_COMPAT_ZMK_TRACKPOINT_PS2_UART := zmk,trackpoint-ps2-uart
+
+menuconfig ZMK_TRACKPOINT
+    bool "PS/2 TrackPoint driver"
+    default $(dt_compat_enabled,$(DT_COMPAT_ZMK_TRACKPOINT_PS2))
+    depends on (!ZMK_SPLIT || ZMK_SPLIT_ROLE_CENTRAL)
+    select ZMK_POINTING
+    select PS2
+    help
+      Driver for a PS/2 TrackPoint. Emits Zephyr input events that are
+      consumed by ZMK's native zmk,input-listener.
+
+if ZMK_TRACKPOINT
+
+config ZMK_TRACKPOINT_PS2_UART
+    bool "UART-based PS/2 transport"
+    default $(dt_compat_enabled,$(DT_COMPAT_ZMK_TRACKPOINT_PS2_UART))
+    select SERIAL
+    select UART_INTERRUPT_DRIVEN
+    select UART_USE_RUNTIME_CONFIGURE
+    select PINCTRL
+    help
+      PS/2 transport that reads through the UART peripheral (with the
+      even-parity trick on nRF52) and writes by bit-banging the GPIO pins.
+
+config ZMK_TRACKPOINT_PS2_UART_WRITE_MODE_BLOCKING
+    bool "Clock out write bits with busy-waits instead of per-edge interrupts"
+    depends on ZMK_TRACKPOINT_PS2_UART
+    default n
+
+config ZMK_TRACKPOINT_ERROR_MITIGATION
+    bool "Drop packets that look like transmission errors"
+    default y
+    help
+      Aborts and requests a resend for packets with overflow in both axes
+      or implausibly large movement deltas.
+
+# The sleep pinctrl state is used to release the UART data pin to GPIO
+# during writes. The sleep state is only compiled in when PM_DEVICE is on.
+config PM_DEVICE
+    default y
+
+# PS/2 clock edges must be serviced within ~30-50us. Shift the BLE
+# controller interrupt priorities down so the GPIOTE interrupt (raised to
+# priority 0 in the devicetree) always wins.
+config BT_CTLR_ADVANCED_FEATURES
+    default y
+
+config BT_CTLR_LLL_PRIO
+    default 1
+
+config BT_CTLR_ULL_HIGH_PRIO
+    default 2
+
+config BT_CTLR_ULL_LOW_PRIO
+    default 2
+
+module = ZMK_TRACKPOINT
+module-str = zmk_trackpoint
+source "subsys/logging/Kconfig.template.log_config"
+
+endif # ZMK_TRACKPOINT

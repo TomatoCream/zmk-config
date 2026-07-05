@@ -1,5 +1,8 @@
 #include "do52pro.dtsi"
 
+#include <input/processors.dtsi>
+#include <dt-bindings/zmk/input_transform.h>
+
 &default_transform {
     col-offset = <6>;
 };
@@ -15,22 +18,11 @@
         ;
 };
 
-// PS/2 TrackPoint - UART driver mode
+// PS/2 TrackPoint via UART transport
 // Pins: SCL=D15 (P1.13), SDA=D16 (P0.10)
-#define MOUSE_PS2_DRIVER_UART
 
-#define MOUSE_PS2_PIN_SCL_PRO_MICRO <&pro_micro 15 GPIO_ACTIVE_HIGH>
-#define MOUSE_PS2_PIN_SDA_PRO_MICRO <&pro_micro 16 GPIO_ACTIVE_HIGH>
-#define MOUSE_PS2_PIN_SDA_PINCTRL <NRF_PSEL(UART_RX, 0, 10)>
-
-#define MOUSE_PS2_UART_BAUD_RATE <14400>
-
-#define MOUSE_PS2_PIN_UNEXPOSED_TX <NRF_PSEL(UART_TX, 0, 27)>
-#define MOUSE_PS2_PIN_UNEXPOSED_RX <NRF_PSEL(UART_RX, 0, 28)>
-
-#define MOUSE_PS2_DT_PRESENT
-
-// Interrupt priority overrides for nice_nano_v2
+// Interrupt priority overrides: the PS/2 clock runs at 10-16.7kHz, so its
+// GPIO interrupt must preempt everything, including the BLE radio.
 &gpiote { interrupts = < 6 0 >; };
 &clock { interrupts = < 0 3 >; };
 &power { interrupts = < 0 3 >; };
@@ -76,63 +68,59 @@
 &spi3 { interrupts = < 47 3 >; };
 &cryptocell { interrupts = < 42 3 >; };
 
-// Pinctrl for UART PS/2
+// Pinctrl for the PS/2 UART:
+// - default: RX on the PS/2 data pin (P0.10), TX parked on unexposed P0.27
+// - sleep: both pins parked on unexposed pins, freeing P0.10 for GPIO
+//   bit-banging during PS/2 writes
 &pinctrl {
     uart0_ps2_default: uart0_ps2_default {
         group1 {
-            psels = MOUSE_PS2_PIN_UNEXPOSED_TX,
-                    MOUSE_PS2_PIN_SDA_PINCTRL;
+            psels = <NRF_PSEL(UART_TX, 0, 27)>,
+                    <NRF_PSEL(UART_RX, 0, 10)>;
         };
     };
 
     uart0_ps2_sleep: uart0_ps2_sleep {
         group1 {
-            psels = MOUSE_PS2_PIN_UNEXPOSED_TX,
-                    MOUSE_PS2_PIN_SDA_PINCTRL;
-            low-power-enable;
-        };
-    };
-
-    uart0_ps2_off: uart0_ps2_off {
-        group1 {
-            psels = MOUSE_PS2_PIN_UNEXPOSED_TX,
-                    MOUSE_PS2_PIN_UNEXPOSED_RX;
+            psels = <NRF_PSEL(UART_TX, 0, 27)>,
+                    <NRF_PSEL(UART_RX, 0, 28)>;
         };
     };
 };
 
-// UART PS/2 device (uart0 stays enabled)
 &uart0 {
     status = "okay";
     compatible = "nordic,nrf-uarte";
 
-    current-speed = MOUSE_PS2_UART_BAUD_RATE;
+    // 14400 baud matches the ~14.9kHz trackpoint clock
+    current-speed = <14400>;
     pinctrl-0 = <&uart0_ps2_default>;
-    pinctrl-1 = <&uart0_ps2_off>;
+    pinctrl-1 = <&uart0_ps2_sleep>;
     pinctrl-names = "default", "sleep";
 
-    uart_ps2: uart_ps2 {
+    ps2_transport: trackpoint_ps2_uart {
         status = "okay";
-        compatible = "uart-ps2";
-        scl-gpios = MOUSE_PS2_PIN_SCL_PRO_MICRO;
-        sda-gpios = MOUSE_PS2_PIN_SDA_PRO_MICRO;
+        compatible = "zmk,trackpoint-ps2-uart";
+        scl-gpios = <&pro_micro 15 GPIO_ACTIVE_HIGH>;
+        sda-gpios = <&pro_micro 16 GPIO_ACTIVE_HIGH>;
     };
 };
 
-// Mouse input device + listener
 / {
-    mouse_ps2: mouse_ps2 {
+    trackpoint: trackpoint {
         status = "okay";
-        compatible = "zmk,input-mouse-ps2";
-        ps2-device = <&uart_ps2>;
+        compatible = "zmk,trackpoint-ps2";
+        ps2-device = <&ps2_transport>;
     };
 
-    mouse_ps2_input_listener: mouse_ps2_input_listener {
-        status = "okay";
-        compatible = "zmk,input-listener-ps2";
-        device = <&mouse_ps2>;
+    trackpoint_listener: trackpoint_listener {
+        compatible = "zmk,input-listener";
+        device = <&trackpoint>;
 
-        // Trackpoint is mounted rotated 90deg
-        xy-swap;
+        // Trackpoint is mounted rotated 90deg -> swap axes in software.
+        // Moving the trackpoint also momentarily activates the mouse_tp
+        // layer (6) for the scroll/click keys.
+        input-processors = <&zip_xy_transform (INPUT_TRANSFORM_XY_SWAP)>,
+                           <&zip_temp_layer 6 250>;
     };
 };

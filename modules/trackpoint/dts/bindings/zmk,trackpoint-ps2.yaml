@@ -1,0 +1,64 @@
+# Copyright (c) 2026 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+description: |
+  PS/2 TrackPoint pointing device. Emits Zephyr input events
+  (INPUT_REL_X/Y/WHEEL, INPUT_BTN_0/1/2); wire it to a zmk,input-listener.
+
+compatible: "zmk,trackpoint-ps2"
+
+properties:
+  ps2-device:
+    type: phandle
+    required: true
+    description: PS/2 transport device (e.g. a zmk,trackpoint-ps2-uart node).
+
+  rst-gpios:
+    type: phandle-array
+    description: Optional GPIO wired to the TrackPoint reset pin, used for Power-On-Reset.
+
+  sampling-rate:
+    type: int
+    default: 100
+    enum: [10, 20, 40, 60, 80, 100, 200]
+    description: PS/2 sampling rate.
+
+  scroll-mode:
+    type: boolean
+    description: Enable the Intellimouse scroll-wheel extension (4-byte packets).
+
+  disable-clicking:
+    type: boolean
+    description: Do not emit button events from physical PS/2 buttons.
+
+  tp-sensitivity:
+    type: int
+    description: TrackPoint sensitivity (0-255, device default 128). Unset leaves the device default.
+
+  tp-neg-inertia:
+    type: int
+    description: TrackPoint negative inertia (0-255, device default 6). Unset leaves the device default.
+
+  tp-val6-upper-speed:
+    type: int
+    description: TrackPoint value6 upper plateau speed (0-255, device default 97). Unset leaves the device default.
+
+  tp-press-to-select:
+    type: boolean
+    description: Enable press-to-select (click by pressing hard on the stick).
+
+  tp-press-to-select-threshold:
+    type: int
+    description: Press-to-select force threshold (0-255, device default 8).
+
+  tp-x-invert:
+    type: boolean
+    description: Invert the X axis in TrackPoint firmware.
+
+  tp-y-invert:
+    type: boolean
+    description: Invert the Y axis in TrackPoint firmware.
+
+  tp-xy-swap:
+    type: boolean
+    description: Swap X and Y axes in TrackPoint firmware.

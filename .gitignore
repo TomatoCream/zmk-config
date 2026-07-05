@@ -1,5 +1,6 @@
 /.west
-/modules
+/modules/*
+!/modules/trackpoint
 /zephyr/*
 !/zephyr/module.yml
 /zmk
