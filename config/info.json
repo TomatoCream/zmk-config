@@ -63,17 +63,17 @@
         { "label": "LALT", "row": 4, "col": 10, "x": 13,    "y": 4 },
         { "label": "RGUI", "row": 4, "col": 11, "x": 14,    "y": 4 },
 
-        { "label": "VOL+" , "row": 5   , "col":  1 , "x":  3.5 ,  "y": 6.25  }     ,
-        { "label": "PLAY" , "row": 5   , "col":  2 , "x":  3.5 ,  "y": 5.75  }     ,
-        { "label": "VOL-" , "row": 5   , "col":  3 , "x":  3   ,    "y": 5.5  }    ,
-        { "label": "NEXT" , "row": 5   , "col":  4 , "x":  3   ,    "y": 6.5  }    ,
-        { "label": "PREV" , "row": 5   , "col":  5 , "x":  2.5 ,  "y": 5        }  ,
+        { "label": "PREV", "row": 5, "col":  1, "x":  3,   "y": 6 },
+        { "label": "VOL-", "row": 5, "col":  2, "x":  4,   "y": 7 },
+        { "label": "PLAY", "row": 5, "col":  3, "x":  4,   "y": 6 },
+        { "label": "VOL+", "row": 5, "col":  4, "x":  4,   "y": 5 },
+        { "label": "NEXT", "row": 5, "col":  5, "x":  5,   "y": 6 },
 
-        { "label": "RGHT" , "row": 5   , "col":  6 , "x": 11   ,    "y": 6.5   }   ,
-        { "label": "LEFT" , "row": 5   , "col":  7 , "x": 11.5 ,  "y": 5         } ,
-        { "label": "DOWN" , "row": 5   , "col":  8 , "x": 11   ,    "y": 5.5   }   ,
-        { "label": "UP"   ,   "row": 5 , "col":  9 , "x": 10.5 ,  "y": 6.25   }    ,
-        { "label": "MUTE" , "row": 5   , "col": 10 , "x": 10.5 ,  "y": 5.75   }
+        { "label": "LEFT", "row": 5, "col":  6, "x": 9,    "y": 6},
+        { "label": "DOWN", "row": 5, "col":  7, "x": 10,   "y": 7 },
+        { "label": "MUTE", "row": 5, "col":  8, "x": 10,   "y": 6 },
+        { "label": "UP",   "row": 5, "col":  9, "x": 10,   "y": 5 },
+        { "label": "RGHT", "row": 5, "col": 10, "x": 11,   "y": 6 }
       ]
     }
   }
