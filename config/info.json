@@ -69,7 +69,7 @@
         { "label": "VOL+", "row": 5, "col":  4, "x":  4,   "y": 5 },
         { "label": "NEXT", "row": 5, "col":  5, "x":  5,   "y": 6 },
 
-        { "label": "LEFT", "row": 5, "col":  6, "x": 9,    "y": 6},
+        { "label": "LEFT", "row": 5, "col":  6, "x": 9,    "y": 6 },
         { "label": "DOWN", "row": 5, "col":  7, "x": 10,   "y": 7 },
         { "label": "MUTE", "row": 5, "col":  8, "x": 10,   "y": 6 },
         { "label": "UP",   "row": 5, "col":  9, "x": 10,   "y": 5 },
