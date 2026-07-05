@@ -27,6 +27,14 @@
   radio 1, everything else 3) are required for PS/2 timing vs BLE — keep
   them when touching the overlay.
 
+## Hardware Gotchas
+
+- **After flashing, the trackpoint may appear dead until the keyboard is
+  power-cycled (unplug/replug USB).** A firmware reset doesn't cut power to
+  the TrackPoint, so it never re-sends its power-on self-test byte; the
+  driver gives up after 10 init attempts (~30s). Always power-cycle before
+  concluding the driver is broken.
+
 ## Business Context
 
 - ZMK 0.3 (`zmkfirmware/zmk` tag v0.3) ships the pointing subsystem
